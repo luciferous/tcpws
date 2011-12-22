@@ -1,32 +1,30 @@
-Name:                tcpws
-Version:             0.1
-Synopsis:            WebSocket-to-TCP service
-Homepage:            https://github.com/luciferous/tcpws
-License:             BSD3
-License-file:        LICENSE
-Author:              Neuman Vong
-Maintainer:          neuman.vong@gmail.com
-Category:            Network
+name:                tcpws
+version:             0.1
+synopsis:            WebSocket-to-TCP proxying server
+description:
+  A WebSocket server which initiates TCP connections on behalf of the
+  WebSocket, copying data between the WebSocket and TCP connection.
+homepage:            https://github.com/luciferous/tcpws
+license:             BSD3
+license-file:        LICENSE
+author:              Neuman Vong <neuman.vong@gmail.com>
+maintainer:          Neuman Vong <neuman.vong@gmail.com>
+copyright:           (c) 2011 Neuman Vong
+category:            Network
 
-Build-type:          Simple
+build-type:          Simple
 
--- Extra files to be distributed with the package, such as examples or
--- a README.
--- Extra-source-files:  
+cabal-version:       >=1.8
+extra-source-files:  README.md
 
--- Constraint on the version of Cabal needed to build this package.
-Cabal-version:       >=1.2
-
-Executable tcpws
-
-Main-is: src/Main.hs
+executable tcpws
+  hs-source-dirs: src
+  main-is: Main.hs
+  ghc-options: -threaded -Wall
   
-  -- Packages needed in order to build this package.
-  -- Build-depends:       
-  
-  -- Modules not exported by this package.
-  -- Other-modules:       
-  
-  -- Extra tools (e.g. alex, hsc2hs, ...) needed to build the source.
-  -- Build-tools:         
-  
+  build-depends:       
+    base >= 4.3 && < 5,
+    websockets >= 0.4.1,
+    bytestring >= 0.9.1,
+    network >= 2.3,
+    mtl >= 2.0
