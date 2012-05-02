@@ -4,7 +4,6 @@ module Main where
 import Prelude hiding (drop)
 import Control.Concurrent (forkIO)
 import Control.Exception (finally, fromException)
-import Control.Monad (unless)
 import Control.Monad.Trans (liftIO)
 import Data.ByteString.Char8 (unpack, split, drop)
 import Network (connectTo, PortID(..))
@@ -33,8 +32,11 @@ application request = do
   where
     doTcpWs handle sink = do
         message <- B.hGetSome handle 4096
-        unless (B.null message)
-               $ WS.sendSink sink (WS.textData message) >> doTcpWs handle sink
+        if (B.null message)
+            then WS.sendSink sink $ WS.close ("closed" :: B.ByteString)
+            else do
+                WS.sendSink sink (WS.textData message)
+                doTcpWs handle sink
     doWsTcp handle = flip WS.catchWsError (catchDisconnect handle) $ do
         message <- WS.receiveData
         liftIO (B.hPut handle message)
@@ -47,5 +49,5 @@ main :: IO ()
 main = do
     [iface, port'] <- getArgs
     let port = fromIntegral (read port' :: Int)
-    putStrLn $ "Listening on: " ++ iface ++ ":" ++ show port
+    putStrLn $ "Listening on " ++ iface ++ ":" ++ show port
     WS.runServer iface port $ application
